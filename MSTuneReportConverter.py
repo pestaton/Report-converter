@@ -8,7 +8,7 @@ path = os.getcwd()
 dir_list = os.listdir(file_folder)
 
 #sets up the rows and columns for the csv creation
-cols = ["Date", "Mass- 59", "Mass- 89", "Mass- 205", "Analog V", "Pulse V"]
+cols = ["Date", "Mass- 59", "Mass- 89", "Mass- 205", "Analog V", "Pulse V", "If/B Pressure", "Analyzer Pressure"]
 rows = []
 
 #This class takes a file directory as an argument and parses XML files.
@@ -41,7 +41,6 @@ class xml_converter():
                         MZ_89 = (tuple((xmltext)[count + 17])[1]).strip()
                         MZ_205 = (tuple((xmltext)[count + 32])[1]).strip()
 
-
                         MZ_59 = MZ_59[7:15]
                         MZ_89 = MZ_89[7:15]
                         MZ_205 = MZ_205[7:15]
@@ -54,10 +53,22 @@ class xml_converter():
                         analog = (tuple((xmltext)[count + 2])[1]).strip()
                         pulse = (tuple((xmltext)[count + 9])[1]).strip()
                         
-
-
+                        #occasonally the values will have 3 digits and a > character will need to be removed.
                         analog = analog[126:130].strip(">")
                         pulse = pulse[126:130].strip(">")
+                        
+                        break
+
+                for count, ele in xmltext:
+                    #finds the EM pulse and analog values
+                    if ele.strip() == "<Name>Vacuum_IfBkPress</Name>":
+                        #the remaining elements should be spaced consistently, file to file
+                        Vacuum_IfBkPress = (tuple((xmltext)[count + 1])[1]).strip()
+                        Vacuum_AnalyzerPress = (tuple((xmltext)[count + 9])[1]).strip()
+                        
+                        #occasonally the values will have 3 digits and a > character will need to be removed.
+                        Vacuum_IfBkPress = Vacuum_IfBkPress[7:15]
+                        Vacuum_AnalyzerPress = Vacuum_AnalyzerPress[7:19]
                         
                         break
     
@@ -68,7 +79,9 @@ class xml_converter():
                          "Mass- 89": MZ_89,
                          "Mass- 205": MZ_205,
                          "Analog V": analog,
-                         "Pulse V": pulse
+                         "Pulse V": pulse,
+                         "If/B Pressure": Vacuum_IfBkPress,
+                         "Analyzer Pressure": Vacuum_AnalyzerPress
             })
             print(rows)
 
