@@ -20,7 +20,7 @@ class xml_converter():
     def __init__(self, file_di):
         self.file = file_di
 
-    
+    #finds the value and truncates it.
     def format_value(self, x):
         first_index = x.index(">") + 1
         last_index = x.index("</")
