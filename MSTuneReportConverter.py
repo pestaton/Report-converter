@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+
+
 file_folder = input("Input folder containing reports: ")
 
 path = os.getcwd()
@@ -11,10 +13,19 @@ dir_list = os.listdir(file_folder)
 cols = ["Date", "Mass- 59", "Mass- 89", "Mass- 205", "Analog V", "Pulse V", "If/B Pressure", "Analyzer Pressure"]
 rows = []
 
+
+
 #This class takes a file directory as an argument and parses XML files.
 class xml_converter():
     def __init__(self, file_di):
         self.file = file_di
+
+    
+    def format_value(self, x):
+        first_index = x.index(">") + 1
+        last_index = x.index("</")
+        x = x[first_index: last_index]
+        return x
 
 #finds and prints the tune reports in the directory
     def find_tune_reports(self):
@@ -29,7 +40,8 @@ class xml_converter():
                     #finds the first tune report and the date/time should be 3 rows down
                     if ele.strip() == "<ReportSetID>0</ReportSetID>":
                         date = (tuple((xmltext)[count + 3])[1]).strip()
-                        date = date[9:28]
+                        date = self.format_value(date)
+                        date = date[0:date.index(".")]
                         date = date.replace("T", " ")
                         break
 
@@ -41,9 +53,13 @@ class xml_converter():
                         MZ_89 = (tuple((xmltext)[count + 17])[1]).strip()
                         MZ_205 = (tuple((xmltext)[count + 32])[1]).strip()
 
-                        MZ_59 = MZ_59[7:15]
-                        MZ_89 = MZ_89[7:15]
-                        MZ_205 = MZ_205[7:15]
+                        MZ_59 = self.format_value(MZ_59)
+                        MZ_89 = self.format_value(MZ_89)
+                        MZ_205 = self.format_value(MZ_205)
+
+                        MZ_59 = round(float(MZ_59))
+                        MZ_89 = round(float(MZ_89))
+                        MZ_205 = round(float(MZ_205))
                         break
 
                 for count, ele in xmltext:
@@ -53,9 +69,9 @@ class xml_converter():
                         analog = (tuple((xmltext)[count + 2])[1]).strip()
                         pulse = (tuple((xmltext)[count + 9])[1]).strip()
                         
-                        #occasonally the values will have 3 digits and a > character will need to be removed.
-                        analog = analog[126:130].strip(">")
-                        pulse = pulse[126:130].strip(">")
+                        #occasonally the values will have 3 digits and a < character will need to be removed.
+                        analog = self.format_value(analog)
+                        pulse = self.format_value(pulse)
                         
                         break
 
@@ -67,8 +83,8 @@ class xml_converter():
                         Vacuum_AnalyzerPress = (tuple((xmltext)[count + 9])[1]).strip()
                         
                         #occasonally the values will have 3 digits and a > character will need to be removed.
-                        Vacuum_IfBkPress = Vacuum_IfBkPress[7:15]
-                        Vacuum_AnalyzerPress = Vacuum_AnalyzerPress[7:19]
+                        Vacuum_IfBkPress = self.format_value(Vacuum_IfBkPress)
+                        Vacuum_AnalyzerPress = self.format_value(Vacuum_AnalyzerPress)
                         
                         break
     
