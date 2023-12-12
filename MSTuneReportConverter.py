@@ -3,7 +3,7 @@ import pandas as pd
 
 
 
-file_folder = input("Input folder containing reports: ")
+file_folder = input("Input folder location containing mass spectrometer batches: ")
 
 path = os.getcwd()
 
@@ -113,4 +113,9 @@ for x in dir_list:
     f.find_tune_reports()
 
 data = pd.DataFrame(rows, columns=cols)
-data.to_csv('output.csv')
+
+#outputs csv to folder that the reports are being exported from.
+data.to_csv(file_folder + "\\" + os.path.basename(file_folder) + '.csv')
+
+#keeps the cmd window open
+input("Done. Press enter to continue.")
